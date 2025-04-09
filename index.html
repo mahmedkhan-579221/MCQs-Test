@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCQ Test App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body,
+        html {
+            height: 100%;
+            width: 100%;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.2em;
+            color: #3b5998;
+            margin-bottom: 20px;
+        }
+
+        .username {
+            text-align: center;
+        }
+
+        .username input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn {
+            background-color: #3b5998;
+            color: #fff;
+            padding: 12px 20px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2d4373;
+        }
+
+        .btn.finish {
+            background-color: #e74c3c;
+        }
+
+        .btn.finish:hover {
+            background-color: #c0392b;
+        }
+
+        .timer {
+            font-size: 1.2em;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .questions {
+            display: none;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question label {
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .certificate {
+            display: none;
+            text-align: center;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            padding: 50px 30px;
+            border-radius: 20px;
+            border: 8px double #28a745;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 700px;
+            animation: fadeIn 1.5s ease-out;
+            position: relative;
+            font-family: 'Georgia', serif;
+        }
+
+        .certificate::before {
+            content: '🎖️';
+            font-size: 3rem;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .certificate h2 {
+            font-size: 3em;
+            color: #2e7d32;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .certificate p {
+            font-size: 1.4em;
+            color: #444;
+            margin: 20px 0;
+        }
+
+        .certificate #certificateName span {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #1b5e20;
+        }
+
+        .certificate .score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 10px;
+        }
+
+        .details {
+            display: none;
+            text-align: left;
+            margin-top: 3400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        .details .correct {
+            color: green;
+        }
+
+        .details .wrong {
+            color: red;
+        }
+
+        .see-details-btn {
+            margin-top: 20px;
+            background-color: #007bff;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="username">
+            <h1>Welcome To The MCQ Test</h1>
+            <p>To Begin, Please Enter Your Name:</p>
+            <input type="text" id="username" placeholder="Your Name" />
+            <button class="btn" onclick="startTest()">Start</button>
+        </div>
+
+        <div class="questions">
+            <div class="timer" id="timer">Time Remaining: 01:00</div>
+            <div id="questionContainer"></div>
+            <div class="navigation">
+                <button class="btn" onclick="prevQuestion()">Back</button>
+                <button class="btn" onclick="nextQuestion()">Next</button>
+                <button class="btn finish" onclick="submitTest()" style="display:none;" id="finishBtn">Finish</button>
+            </div>
+        </div>
+
+        <div class="certificate">
+            <h2>Certificate of Completion</h2>
+            <p>This is to certify that</p>
+            <p id="certificateName"><span></span></p>
+            <p>has successfully completed the test</p>
+            <p>Your Score:</p>
+            <p class="score" id="certificatePercentage"></p>
+            <button class="btn see-details-btn" onclick="showDetails()">See Details</button>
+        </div>
+
+        <div class="details" id="detailsContainer"></div>
+    </div>
+
+    <script>
+        const questionsData = [
+            { question: "1. What is Scratch?", options: ["A) A programming language", "B) A game engine", "C) A movie editing tool", "D) A graphics software"], correct: "A) A programming language" },
+            { question: "2. Who created Scratch?", options: ["A) Mark Zuckerberg", "B) MIT Media Lab", "C) Steve Jobs", "D) Bill Gates"], correct: "B) MIT Media Lab" },
+            { question: "3. What are 'sprites' in Scratch?", options: ["A) Backgrounds", "B) Blocks of code", "C) Characters or objects in the project", "D) Sounds in the project"], correct: "C) Characters or objects in the project" },
+            { question: "4. What is the 'stage' in Scratch?", options: ["A) The area where code blocks are displayed", "B) The area where the sprite performs actions", "C) The area where you can draw", "D) The place where you store variables"], correct: "B) The area where the sprite performs actions" },
+            { question: "5. What do 'costumes' in Scratch refer to?", options: ["A) The sounds of the sprite", "B) The backgrounds in the project", "C) The different visual appearances of a sprite", "D) The movement of the sprite"], correct: "C) The different visual appearances of a sprite" },
+            { question: "6. What is the default starting sprite in Scratch?", options: ["A) Cat", "B) Dog", "C) Bird", "D) Mouse"], correct: "A) Cat" },
+            { question: "7. What is a 'block' in Scratch?", options: ["A) A piece of code", "B) A physical object", "C) A tool to create sprites", "D) A type of variable"], correct: "A) A piece of code" },
+            { question: "8. What does the 'forever' block do?", options: ["A) Repeats the code block once", "B) Runs the code block once", "C) Loops the code block indefinitely", "D) Ends the project"], correct: "C) Loops the code block indefinitely" },
+            { question: "9. How do you control the movement of a sprite in Scratch?", options: ["A) Using the 'motion' blocks", "B) Using the 'looks' blocks", "C) Using the 'sound' blocks", "D) Using the 'events' blocks"], correct: "A) Using the 'motion' blocks" },
+            { question: "10. What is the 'say' block used for?", options: ["A) To make a sprite speak", "B) To change the sprite's color", "C) To move the sprite", "D) To add sound"], correct: "A) To make a sprite speak" },
+            { question: "11. What is the 'when green flag clicked' block?", options: ["A) A block that starts the program", "B) A block that makes the sprite jump", "C) A block that hides the sprite", "D) A block that ends the project"], correct: "A) A block that starts the program" },
+            { question: "12. Which of these is a type of variable in Scratch?", options: ["A) Local variables", "B) Global variables", "C) Both A and B", "D) None of the above"], correct: "C) Both A and B" },
+            { question: "13. What does the 'wait' block do?", options: ["A) Pauses the program", "B) Repeats the program", "C) Starts the program", "D) Ends the program"], correct: "A) Pauses the program" },
+            { question: "14. What are 'sounds' in Scratch?", options: ["A) Visual effects", "B) Background music", "C) Audio effects or music", "D) Sprite actions"], correct: "C) Audio effects or music" },
+            { question: "15. What is the 'broadcast' block used for?", options: ["A) To send a message to other sprites", "B) To change the color of the sprite", "C) To make the sprite jump", "D) To stop all blocks"], correct: "A) To send a message to other sprites" },
+            { question: "16. What is the 'pen' extension used for in Scratch?", options: ["A) Drawing shapes", "B) Writing code", "C) Coloring sprites", "D) Changing the background"], correct: "A) Drawing shapes" },
+            { question: "17. What does the 'if' block do?", options: ["A) Executes code if a condition is true", "B) Always runs code", "C) Ends the program", "D) Creates new sprites"], correct: "A) Executes code if a condition is true" },
+            { question: "18. What is 'cloning' in Scratch?", options: ["A) Making copies of a sprite", "B) Making a new costume", "C) Changing the sprite's size", "D) Adding new backgrounds"], correct: "A) Making copies of a sprite" },
+            { question: "19. What is the 'motion' block used for?", options: ["A) Controlling sound", "B) Controlling sprite movement", "C) Changing sprite costumes", "D) Adding variables"], correct: "B) Controlling sprite movement" },
+            { question: "20. How can you make a sprite disappear?", options: ["A) Using the 'hide' block", "B) Using the 'go to' block", "C) Using the 'change size' block", "D) Using the 'wait' block"], correct: "A) Using the 'hide' block" },
+            { question: "21. What is the 'looks' block used for?", options: ["A) Changing the sprite's color", "B) Displaying text", "C) Changing sprite costumes", "D) Controlling sound"], correct: "C) Changing sprite costumes" },
+            { question: "22. What does the 'glide' block do?", options: ["A) Moves the sprite in a straight line", "B) Makes the sprite fly", "C) Moves the sprite to a position over a time", "D) Makes the sprite disappear"], correct: "C) Moves the sprite to a position over a time" },
+            { question: "23. How do you make a sprite follow the mouse pointer?", options: ["A) Using the 'glide' block", "B) Using the 'point towards' block", "C) Using the 'go to' block", "D) Using the 'move' block"], correct: "B) Using the 'point towards' block" },
+            { question: "24. What is the purpose of the 'repeat' block?", options: ["A) To repeat code a certain number of times", "B) To make the sprite wait", "C) To create a loop", "D) To start the program"], correct: "A) To repeat code a certain number of times" },
+            { question: "25. How can you add a new backdrop to your Scratch project?", options: ["A) Use the 'costumes' section", "B) Use the 'backdrops' section", "C) Use the 'sounds' section", "D) Use the 'events' section"], correct: "B) Use the 'backdrops' section" },
+            { question: "26. What type of data does the 'variable' block store?", options: ["A) Numbers", "B) Text", "C) Both numbers and text", "D) Graphics"], correct: "C) Both numbers and text" },
+            { question: "27. What is the function of the 'event' block?", options: ["A) Start, stop, or control blocks of code", "B) Make the sprite jump", "C) Display text", "D) Play sound"], correct: "A) Start, stop, or control blocks of code" },
+            { question: "28. How can you change the size of a sprite?", options: ["A) Using the 'resize' block", "B) Using the 'change size' block", "C) Using the 'scale' block", "D) Using the 'motion' block"], correct: "B) Using the 'change size' block" },
+            { question: "29. How can you make a sprite move in a curved path?", options: ["A) Using the 'glide' block", "B) Using the 'turn' block", "C) Using the 'repeat' block", "D) Using the 'move' block"], correct: "B) Using the 'turn' block" },
+            { question: "30. Which block is used to detect if a sprite touches another sprite?", options: ["A) 'touching' block", "B) 'if' block", "C) 'forever' block", "D) 'glide' block"], correct: "A) 'touching' block" },
+            { question: "31. How can you stop a sound from playing?", options: ["A) Using the 'stop all sounds' block", "B) Using the 'stop sound' block", "C) Using the 'change sound' block", "D) Using the 'wait' block"], correct: "B) Using the 'stop sound' block" },
+            { question: "32. What does the 'change pen color by' block do?", options: ["A) Change the pen color by a certain amount", "B) Start drawing", "C) Hide the pen", "D) Change the sprite color"], correct: "A) Change the pen color by a certain amount" },
+            { question: "33. What does the 'reset timer' block do?", options: ["A) Resets the timer to 0", "B) Starts the timer", "C) Pauses the timer", "D) Stops the timer"], correct: "A) Resets the timer to 0" },
+            { question: "34. What is the 'clone' block used for?", options: ["A) To create a copy of a sprite", "B) To change the sprite's appearance", "C) To move the sprite", "D) To start a sound"], correct: "A) To create a copy of a sprite" },
+            { question: "35. How do you make a sprite move in a specific direction?", options: ["A) Use the 'glide' block", "B) Use the 'move' block", "C) Use the 'turn' block", "D) Use the 'point towards' block"], correct: "B) Use the 'move' block" },
+            { question: "36. What is the purpose of the 'ask' block?", options: ["A) To prompt the user for input", "B) To change sprite size", "C) To create a new sprite", "D) To stop the program"], correct: "A) To prompt the user for input" },
+            { question: "37. What does the 'show' block do?", options: ["A) Displays the sprite", "B) Hides the sprite", "C) Starts the program", "D) Pauses the program"], correct: "A) Displays the sprite" },
+            { question: "38. What happens when you click on a sprite in Scratch?", options: ["A) It triggers an event", "B) It starts a new project", "C) It moves randomly", "D) It hides the sprite"], correct: "A) It triggers an event" },
+            { question: "39. Which of these is not an extension in Scratch?", options: ["A) Music", "B) Lego Mindstorms", "C) Text-to-Speech", "D) Graphic Design"], correct: "D) Graphic Design" },
+            { question: "40. How can you test if your Scratch project is working?", options: ["A) Click the green flag", "B) Run a block", "C) Click the stage", "D) Check for errors in the code"], correct: "A) Click the green flag" },
+            { question: "41. How do you create a new variable in Scratch?", options: ["A) Use the 'variables' menu", "B) Use the 'make variable' button", "C) Use the 'new sprite' button", "D) Use the 'events' menu"], correct: "B) Use the 'make variable' button" },
+            { question: "42. How do you make a sprite f  ollow another sprite?", options: ["A) Using the 'go to' block", "B) Using the 'point towards' block", "C) Using the 'glide' block", "D) Using the 'move' block"], correct: "B) Using the 'point towards' block" },
+            { question: "43. What does the 'repeat until' block do?", options: ["A) Repeats code until a condition is true", "B) Always repeats code", "C) Ends the program", "D) Makes a sprite jump"], correct: "A) Repeats code until a condition is true" },
+            { question: "44. What type of data is stored in a 'list' variable?", options: ["A) Multiple values", "B) One value", "C) No values", "D) Strings only"], correct: "A) Multiple values" },
+            { question: "45. What does the 'switch backdrop to' block do?", options: ["A) Changes the backdrop to the specified one", "B) Adds a new sprite", "C) Adds a new costume", "D) Changes the sprite's size"], correct: "A) Changes the backdrop to the specified one" },
+            { question: "46. What is the purpose of the 'when I start as a clone' block?", options: ["A) It triggers when a new clone is created", "B) It triggers when the project starts", "C) It triggers when a sprite is clicked", "D) It triggers when the green flag is clicked"], correct: "A) It triggers when a new clone is created" },
+            { question: "47. What is the function of the 'pen down' block?", options: ["A) Starts drawing", "B) Stops drawing", "C) Moves the pen", "D) Clears the screen"], correct: "A) Starts drawing" },
+            { question: "48. What is the default size of a sprite in Scratch?", options: ["A) 100%", "B) 50%", "C) 25%", "D) 75%"], correct: "A) 100%" },
+            { question: "49. How can you make a sprite say something?", options: ["A) Using the 'say' block", "B) Using the 'speak' block", "C) Using the 'comment' block", "D) Using the 'ask' block"], correct: "A) Using the 'say' block" },
+            { question: "50. How do you save your Scratch project?", options: ["A) Click the save button", "B) Click the download button", "C) It saves automatically", "D) Click the save as button"], correct: "C) It saves automatically" },
+
+
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let username = "";
+        let timeLimit = 60;
+        let timerInterval;
+
+        function startTest() {
+            username = document.getElementById("username").value.trim();
+            if (!username) {
+                alert("Please enter your name.");
+                return;
+            }
+
+            document.querySelector(".username").style.display = "none";
+            document.querySelector(".questions").style.display = "block";
+            showQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerDisplay = document.getElementById('timer');
+            let remainingTime = 3600;  // Set the initial time to 3600 seconds (1 hour)
+
+            timerInterval = setInterval(() => {
+                let minutes = Math.floor(remainingTime / 60);  // Get the number of minutes
+                let seconds = remainingTime % 60;  // Get the remaining seconds
+                timerDisplay.textContent = `Time Remaining: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Time's up! Submitting your test.");
+                    submitTest();  // Assuming this function handles submitting the test
+                }
+
+                remainingTime--;  // Decrease the remaining time by 1 second
+            }, 1000);  // Update the timer every second
+        }
+
+
+        function showQuestion() {
+            const q = questionsData[currentQuestionIndex];
+            const container = document.getElementById("questionContainer");
+            container.innerHTML = ` 
+        <div class="question">
+          <label>${q.question}</label>
+          ${q.options.map(option => `
+
+            <div>
+              <input type="radio" name="q" value="${option}" ${userAnswers[currentQuestionIndex] === option ? 'checked' : ''}> ${option}
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+            document.querySelector('.navigation button:nth-child(1)').style.display = currentQuestionIndex === 0 ? 'none' : 'inline-block';
+            document.getElementById('finishBtn').style.display = currentQuestionIndex === questionsData.length - 1 ? 'inline-block' : 'none';
+            document.querySelector('.navigation button:nth-child(2)').style.display = currentQuestionIndex === questionsData.length - 1 ? 'none' : 'inline-block';
+        }
+
+        function nextQuestion() {
+            saveAnswer();
+            if (currentQuestionIndex < questionsData.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            saveAnswer();
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function saveAnswer() {
+            const selected = document.querySelector('input[name="q"]:checked');
+            if (selected) {
+                userAnswers[currentQuestionIndex] = selected.value;
+            }
+        }
+
+        function submitTest() {
+            clearInterval(timerInterval);
+            saveAnswer();
+
+            let correctCount = 0;
+            questionsData.forEach((q, i) => {
+                if (userAnswers[i] === q.correct) correctCount++;
+            });
+
+            const percentage = (correctCount / questionsData.length) * 100;
+            displayCertificate(username, percentage);
+        }
+
+        function displayCertificate(name, percentage) {
+            document.querySelector(".questions").style.display = "none";
+            document.querySelector(".certificate").style.display = "block";
+            document.querySelector("#certificateName span").textContent = name;
+            document.getElementById("certificatePercentage").textContent = percentage.toFixed(2) + "%";
+        }
+
+        function showDetails() {
+            // Hide the certificate and show the details section
+            document.querySelector(".certificate").style.display = "none";
+            const detailsContainer = document.getElementById("detailsContainer");
+            detailsContainer.style.display = "block";
+
+            // Show the details of the correct and wrong answers
+            detailsContainer.innerHTML = "";
+            questionsData.forEach((q, i) => {
+                const userAnswer = userAnswers[i] || "No Answer";
+                const isCorrect = userAnswer === q.correct;
+                detailsContainer.innerHTML += `
+          <div class="${isCorrect ? 'correct' : 'wrong'}">
+            <strong>${q.question}</strong><br/>
+            Your Answer: ${userAnswer} ${isCorrect ? '✅' : '❌'}<br/>
+            Correct Answer: ${q.correct}<br/><br/>
+          </div>
+        `;
+            });
+        }
+    </script>
+</body>
+
+</html>
