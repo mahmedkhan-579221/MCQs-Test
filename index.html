@@ -374,6 +374,33 @@
 
             const percentage = (correctCount / questionsData.length) * 100;
             displayCertificate(username, percentage);
+
+
+            function submitTest() {
+                clearInterval(timerInterval);
+                saveAnswer();
+
+                let correctCount = 0;
+                questionsData.forEach((q, i) => {
+                    if (userAnswers[i] === q.correct) correctCount++;
+                });
+
+                const percentage = (correctCount / questionsData.length) * 100;
+
+                // ✅ Send email using EmailJS
+                emailjs.send("service_dwfnnk3", "template_m9bnf7o", {
+                    from_name: username,                 // User's name
+                    score: percentage.toFixed(2),       // Final score
+                })
+                    .then(function (response) {
+                        console.log('✅ Email sent!', response.status, response.text);
+                    }, function (error) {
+                        console.error('❌ Failed to send email:', error);
+                    });
+
+                displayCertificate(username, percentage);
+            }
+
         }
 
         function displayCertificate(name, percentage) {
@@ -403,6 +430,17 @@
         `;
             });
         }
+
+    </script>
+
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("P5k5bqVxgP5E8udJw"); // 🔁 Replace with your User ID
+        })();
+
+
+
     </script>
 </body>
 
