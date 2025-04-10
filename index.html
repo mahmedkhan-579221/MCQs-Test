@@ -226,23 +226,24 @@
     </div>
 
    <!-- EmailJS SDK v4 using Module -->
-<script type="module">
-    import emailjs from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+   <script type="module">
+    import { init, send } from 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
 
-    emailjs.init('P5k5bqVxgP5E8udJw'); // Replace with your actual public key
+    init('P5k5bqVxgP5E8udJw'); // Replace with your actual EmailJS public key
 
-    // Expose the sendEmail function to the global scope
+    // Make the sendEmail function available globally
     window.sendEmail = function (username, percentage) {
-        emailjs.send("service_dwfnnk3", "template_m9bnf7o", {
+        send("service_dwfnnk3", "template_m9bnf7o", {
             from_name: username,
             score: percentage.toFixed(2),
         }).then(function (response) {
             console.log('✅ Email sent!', response.status, response.text);
-        }, function (error) {
+        }).catch(function (error) {
             console.error('❌ Failed to send email:', error);
         });
     };
 </script>
+
 
 <!-- Main App Script (Non-module) -->
 <script>
