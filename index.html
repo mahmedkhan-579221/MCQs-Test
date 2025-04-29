@@ -342,71 +342,143 @@
     </div>
 
     <div class="admin-container" id="adminContainer">
-  <h2>Student Results</h2>
-  <div class="table-responsive">
-    <table>
-      <thead>
-        <tr>
-          <th>Student Name</th>
-          <th>Score</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="adminResults"></tbody>
-    </table>
-  </div>
-</div>
+      <h2>Student Results</h2>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Student Name</th>
+              <th>Score</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminResults"></tbody>
+        </table>
+      </div>
+    </div>
 
-  <script>
-    const questionsData = [
-      { question: "1. What is Scratch?", options: ["A) A programming language", "B) A game engine", "C) A movie editing tool", "D) A graphics software"], correct: "A) A programming language" },
-      { question: "2. Who created Scratch?", options: ["A) Mark Zuckerberg", "B) MIT Media Lab", "C) Steve Jobs", "D) Bill Gates"], correct: "B) MIT Media Lab" },
-      { question: "3. What are 'sprites' in Scratch?", options: ["A) Backgrounds", "B) Blocks of code", "C) Characters or objects in the project", "D) Sounds in the project"], correct: "C) Characters or objects in the project" }
-    ];
+    <form action="https://formsubmit.co/idaraalkhair133@gmail.com" method="POST" id="resultForm">
+      <input type="hidden" name="name" id="formName">
+      <input type="hidden" name="score" id="formScore">
+      <input type="hidden" name="_subject" value="New MCQ Test Result!">
+      <input type="hidden" name="_captcha" value="false">
+    </form>
 
-    let currentQuestionIndex = 0;
-    let userAnswers = [];
-    let username = "";
-    let timerInterval;
-    let studentResults = JSON.parse(localStorage.getItem('studentResults')) || [];
-    const adminPassword = "a"; // Change this password to whatever you prefer
+    <script>
+      const questionsData = [
+        // Scratch MCQs (1-20)
+        { question: "1. What is the main purpose of Scratch?", options: ["A) To edit videos", "B) To create animations and games", "C) To browse the internet", "D) To edit documents"], correct: "B) To create animations and games" },
+        { question: "2. In Scratch, what is a 'script'?", options: ["A) A costume", "B) A sequence of blocks", "C) A sound file", "D) A backdrop"], correct: "B) A sequence of blocks" },
+        { question: "3. What color are the 'Control' blocks in Scratch?", options: ["A) Blue", "B) Orange", "C) Yellow", "D) Purple"], correct: "B) Orange" },
+        { question: "4. Which block category would you use to add background music?", options: ["A) Motion", "B) Looks", "C) Sound", "D) Events"], correct: "C) Sound" },
+        { question: "5. Which block triggers an action when a sprite is clicked?", options: ["A) When green flag clicked", "B) When sprite clicked", "C) Broadcast message", "D) Repeat forever"], correct: "B) When sprite clicked" },
+        { question: "6. Which section in Scratch allows you to add special features like 'Video Sensing'?", options: ["A) Costumes", "B) Extensions", "C) Sounds", "D) Backdrops"], correct: "B) Extensions" },
+        { question: "7. Which programming concept is demonstrated by repeating a block of code?", options: ["A) Variable", "B) Loop", "C) Event", "D) Clone"], correct: "B) Loop" },
+        { question: "8. What happens when you use the 'clear' block from the Pen extension?", options: ["A) Clears all costumes", "B) Clears all drawings on the stage", "C) Clears all sounds", "D) Clears all sprites"], correct: "B) Clears all drawings on the stage" },
+        { question: "9. Which block would you use to check if two sprites are touching?", options: ["A) 'If' block", "B) 'Touching' block", "C) 'Broadcast' block", "D) 'Repeat' block"], correct: "B) 'Touching' block" },
+        { question: "10. What Scratch feature lets sprites communicate with each other?", options: ["A) Variables", "B) Broadcasts", "C) Looks", "D) Sounds"], correct: "B) Broadcasts" },
+        { question: "11. What does the 'hide' block do?", options: ["A) Deletes a sprite", "B) Hides the sprite from the stage", "C) Stops the project", "D) Pauses the script"], correct: "B) Hides the sprite from the stage" },
+        { question: "12. How can you add a new sprite in Scratch?", options: ["A) Draw it", "B) Choose from library", "C) Upload from device", "D) All of the above"], correct: "D) All of the above" },
+        { question: "13. What kind of block is 'wait 1 second'?", options: ["A) Control block", "B) Motion block", "C) Sound block", "D) Events block"], correct: "A) Control block" },
+        { question: "14. In Scratch, what does a 'forever if' block do?", options: ["A) Repeats code a set number of times", "B) Stops when condition is false", "C) Keeps checking a condition forever", "D) Plays a sound forever"], correct: "C) Keeps checking a condition forever" },
+        { question: "15. What happens when a sprite 'clones' itself?", options: ["A) It deletes itself", "B) It creates an identical copy", "C) It plays a sound", "D) It changes costume"], correct: "B) It creates an identical copy" },
+        { question: "16. Which tab in Scratch allows you to design your sprite?", options: ["A) Code", "B) Costumes", "C) Sounds", "D) Backdrops"], correct: "B) Costumes" },
+        { question: "17. How do you stop all scripts in Scratch?", options: ["A) Click the stop sign", "B) Delete the sprite", "C) Use 'hide' block", "D) Change costume"], correct: "A) Click the stop sign" },
+        { question: "18. What block would you use to move a sprite 10 steps?", options: ["A) Turn block", "B) Move block", "C) Change x by block", "D) Go to block"], correct: "B) Move block" },
+        { question: "19. What happens if you click on the green flag?", options: ["A) Project resets", "B) Scripts under 'when green flag clicked' start", "C) Sprites hide", "D) Sounds stop"], correct: "B) Scripts under 'when green flag clicked' start" },
+        { question: "20. Which block can be used to control a sprite’s x and y position?", options: ["A) Move 10 steps", "B) Go to x: y: block", "C) Play sound", "D) Change costume"], correct: "B) Go to x: y: block" },
 
-    function startTest() {
-      username = document.getElementById("username").value.trim();
-      if (!username) {
-        alert("Please enter your name.");
-        return;
+        // Math MCQs (21-30)
+        { question: "21. What is 15 + 27?", options: ["A) 32", "B) 42", "C) 52", "D) 62"], correct: "C) 42" },
+        { question: "22. What is the square root of 81?", options: ["A) 8", "B) 9", "C) 7", "D) 6"], correct: "B) 9" },
+        { question: "23. What is 9 x 7?", options: ["A) 56", "B) 63", "C) 72", "D) 81"], correct: "B) 63" },
+        { question: "24. If a rectangle has sides 6 cm and 4 cm, its area is?", options: ["A) 10 cm²", "B) 24 cm²", "C) 20 cm²", "D) 12 cm²"], correct: "B) 24 cm²" },
+        { question: "25. What is 100 divided by 4?", options: ["A) 20", "B) 24", "C) 25", "D) 28"], correct: "C) 25" },
+        { question: "26. Solve: 5² = ?", options: ["A) 10", "B) 15", "C) 20", "D) 25"], correct: "D) 25" },
+        { question: "27. Which is greater: 3/4 or 5/8?", options: ["A) 3/4", "B) 5/8"], correct: "A) 3/4" },
+        { question: "28. What is 1/2 of 50?", options: ["A) 20", "B) 25", "C) 30", "D) 35"], correct: "B) 25" },
+        { question: "29. How many degrees in a right angle?", options: ["A) 45", "B) 90", "C) 180", "D) 360"], correct: "B) 90" },
+        { question: "30. What is 7²?", options: ["A) 14", "B) 21", "C) 49", "D) 77"], correct: "C) 49" },
+
+        // IQ MCQs (31-40)
+        { question: "31. Find the next number: 2, 4, 8, 16, ?", options: ["A) 18", "B) 24", "C) 32", "D) 64"], correct: "C) 32" },
+        { question: "32. What comes next: A, C, E, G, ?", options: ["A) H", "B) I", "C) J", "D) K"], correct: "C) I" },
+        { question: "33. Which is the odd one out: Dog, Cat, Lion, Apple?", options: ["A) Dog", "B) Cat", "C) Lion", "D) Apple"], correct: "D) Apple" },
+        { question: "34. Which shape has 3 sides?", options: ["A) Square", "B) Triangle", "C) Circle", "D) Pentagon"], correct: "B) Triangle" },
+        { question: "35. Which day comes after Friday?", options: ["A) Sunday", "B) Saturday", "C) Thursday", "D) Monday"], correct: "B) Saturday" },
+        { question: "36. If you have 2 apples and eat 1, how many left?", options: ["A) 0", "B) 1", "C) 2", "D) 3"], correct: "B) 1" },
+        { question: "37. Which is heavier: 1 kg of iron or 1 kg of cotton?", options: ["A) Iron", "B) Cotton", "C) Same", "D) Cannot say"], correct: "C) Same" },
+        { question: "38. Which one is not a color?", options: ["A) Red", "B) Blue", "C) Square", "D) Green"], correct: "C) Square" },
+        { question: "39. How many months have 28 days?", options: ["A) 1", "B) 2", "C) 12", "D) 6"], correct: "C) 12" },
+        { question: "40. How many legs does a spider have?", options: ["A) 6", "B) 8", "C) 10", "D) 12"], correct: "B) 8" },
+
+        // Computer MCQs (41-60)
+        { question: "41. What does CPU stand for?", options: ["A) Central Program Unit", "B) Central Processing Unit", "C) Central Print Unit", "D) Control Processing Unit"], correct: "B) Central Processing Unit" },
+        { question: "42. What device is used to input text?", options: ["A) Mouse", "B) Keyboard", "C) Monitor", "D) Printer"], correct: "B) Keyboard" },
+        { question: "43. Which storage holds data permanently?", options: ["A) RAM", "B) ROM", "C) Cache", "D) Register"], correct: "B) ROM" },
+        { question: "44. Which one is an output device?", options: ["A) Monitor", "B) Keyboard", "C) Mouse", "D) Joystick"], correct: "A) Monitor" },
+        { question: "45. What does HTML stand for?", options: ["A) HighText Machine Language", "B) HyperText Markup Language", "C) HyperTool Markup Language", "D) HighText Mark Language"], correct: "B) HyperText Markup Language" },
+        { question: "46. What does a router do?", options: ["A) Stores files", "B) Directs data packets", "C) Displays images", "D) Controls printer"], correct: "B) Directs data packets" },
+        { question: "47. What type of file is a .jpg?", options: ["A) Document", "B) Audio", "C) Image", "D) Video"], correct: "C) Image" },
+        { question: "48. Which is an example of an operating system?", options: ["A) Chrome", "B) Windows", "C) Google", "D) Facebook"], correct: "B) Windows" },
+        { question: "49. What does RAM do?", options: ["A) Stores long-term data", "B) Helps with short-term memory", "C) Prints documents", "D) Inputs text"], correct: "B) Helps with short-term memory" },
+        { question: "50. What is Wi-Fi?", options: ["A) Wired Internet", "B) Wireless Internet", "C) Web Filter", "D) Windows Firewall"], correct: "B) Wireless Internet" },
+        { question: "51. What is the brain of a computer?", options: ["A) Monitor", "B) CPU", "C) Keyboard", "D) Mouse"], correct: "B) CPU" },
+        { question: "52. Which key is used to create space between words?", options: ["A) Enter", "B) Shift", "C) Spacebar", "D) Control"], correct: "C) Spacebar" },
+        { question: "53. Which file extension is used for a Word document?", options: ["A) .doc", "B) .xls", "C) .ppt", "D) .jpg"], correct: "A) .doc" },
+        { question: "54. Which one is a web browser?", options: ["A) Excel", "B) Firefox", "C) Word", "D) Photoshop"], correct: "B) Firefox" },
+        { question: "55. What kind of device is a printer?", options: ["A) Input", "B) Output", "C) Storage", "D) Processing"], correct: "B) Output" },
+        { question: "56. Which of these is a programming language?", options: ["A) Windows", "B) Linux", "C) Python", "D) Facebook"], correct: "C) Python" },
+        { question: "57. What is a URL?", options: ["A) Uniform Resource Locator", "B) Uniform Refresh Loader", "C) Universal Resource Link", "D) Uniform Reading Line"], correct: "A) Uniform Resource Locator" },
+        { question: "58. What is Microsoft Excel used for?", options: ["A) Writing letters", "B) Playing music", "C) Calculations and spreadsheets", "D) Drawing pictures"], correct: "C) Calculations and spreadsheets" },
+        { question: "59. Where is data temporarily stored?", options: ["A) Hard disk", "B) ROM", "C) RAM", "D) Printer"], correct: "C) RAM" },
+        { question: "60. What is the shortcut to copy?", options: ["A) Ctrl+X", "B) Ctrl+V", "C) Ctrl+C", "D) Ctrl+P"], correct: "C) Ctrl+C" }
+      ];
+
+
+      let currentQuestionIndex = 0;
+      let userAnswers = [];
+      let username = "";
+      let timerInterval;
+      let studentResults = JSON.parse(localStorage.getItem('studentResults')) || [];
+      const adminPassword = "a"; // Change this password to whatever you prefer
+
+      function startTest() {
+        username = document.getElementById("username").value.trim();
+        if (!username) {
+          alert("Please enter your name.");
+          return;
+        }
+
+        document.querySelector(".username").style.display = "none";
+        document.querySelector(".questions").style.display = "block";
+        showQuestion();
+        startTimer();
       }
 
-      document.querySelector(".username").style.display = "none";
-      document.querySelector(".questions").style.display = "block";
-      showQuestion();
-      startTimer();
-    }
+      function startTimer() {
+        const timerDisplay = document.getElementById('timer');
+        let remainingTime = 3600;
 
-    function startTimer() {
-      const timerDisplay = document.getElementById('timer');
-      let remainingTime = 3600;
+        timerInterval = setInterval(() => {
+          let minutes = Math.floor(remainingTime / 60);
+          let seconds = remainingTime % 60;
+          timerDisplay.textContent = `Time Remaining: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+          if (remainingTime <= 0) {
+            clearInterval(timerInterval);
+            alert("Time's up! Submitting your test.");
+            submitTest();
+          }
+          remainingTime--;
+        }, 1000);
+      }
 
-      timerInterval = setInterval(() => {
-        let minutes = Math.floor(remainingTime / 60);
-        let seconds = remainingTime % 60;
-        timerDisplay.textContent = `Time Remaining: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        if (remainingTime <= 0) {
-          clearInterval(timerInterval);
-          alert("Time's up! Submitting your test.");
-          submitTest();
-        }
-        remainingTime--;
-      }, 1000);
-    }
-
-    function showQuestion() {
-      const q = questionsData[currentQuestionIndex];
-      const container = document.getElementById("questionContainer");
-      container.innerHTML = `
+      function showQuestion() {
+        const q = questionsData[currentQuestionIndex];
+        const container = document.getElementById("questionContainer");
+        container.innerHTML = `
 
         <div class="question">
           <label>${q.question}</label>
@@ -420,94 +492,109 @@
         </div>
       `;
 
-      document.querySelector('.navigation button:nth-child(1)').style.display = currentQuestionIndex === 0 ? 'none' : 'inline-block';
-      document.getElementById('finishBtn').style.display = currentQuestionIndex === questionsData.length - 1 ? 'inline-block' : 'none';
-      document.querySelector('.navigation button:nth-child(2)').style.display = currentQuestionIndex === questionsData.length - 1 ? 'none' : 'inline-block';
-    }
-
-    function nextQuestion() {
-      saveAnswer();
-      if (currentQuestionIndex < questionsData.length - 1) {
-        currentQuestionIndex++;
-        showQuestion();
+        document.querySelector('.navigation button:nth-child(1)').style.display = currentQuestionIndex === 0 ? 'none' : 'inline-block';
+        document.getElementById('finishBtn').style.display = currentQuestionIndex === questionsData.length - 1 ? 'inline-block' : 'none';
+        document.querySelector('.navigation button:nth-child(2)').style.display = currentQuestionIndex === questionsData.length - 1 ? 'none' : 'inline-block';
       }
-    }
 
-    function prevQuestion() {
-      saveAnswer();
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        showQuestion();
+      function nextQuestion() {
+        saveAnswer();
+        if (currentQuestionIndex < questionsData.length - 1) {
+          currentQuestionIndex++;
+          showQuestion();
+        }
       }
-    }
 
-    function saveAnswer() {
-      const selected = document.querySelector('input[name="q"]:checked');
-      if (selected) {
-        userAnswers[currentQuestionIndex] = selected.value;
+      function prevQuestion() {
+        saveAnswer();
+        if (currentQuestionIndex > 0) {
+          currentQuestionIndex--;
+          showQuestion();
+        }
       }
-    }
 
-    function submitTest() {
-      clearInterval(timerInterval);
-      saveAnswer();
-      let correctCount = 0;
-      questionsData.forEach((q, i) => {
-        if (userAnswers[i] === q.correct) correctCount++;
-      });
+      function saveAnswer() {
+        const selected = document.querySelector('input[name="q"]:checked');
+        if (selected) {
+          userAnswers[currentQuestionIndex] = selected.value;
+        }
+      }
 
-      const percentage = (correctCount / questionsData.length) * 100;
-      studentResults.push({
-        name: username,
-        score: percentage.toFixed(2) + "%",
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString()
-      });
+      function submitTest() {
+        clearInterval(timerInterval);
+        saveAnswer();
+        let correctCount = 0;
+        questionsData.forEach((q, i) => {
+          if (userAnswers[i] === q.correct) correctCount++;
+        });
 
-      localStorage.setItem('studentResults', JSON.stringify(studentResults));
+        const percentage = (correctCount / questionsData.length) * 100;
+        const finalScore = percentage.toFixed(2) + "%";
 
-      displayCertificate(username, percentage);
-    }
+        // Save to localStorage
+        studentResults.push({
+          name: username,
+          score: finalScore,
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString()
+        });
+        localStorage.setItem('studentResults', JSON.stringify(studentResults));
 
-    function displayCertificate(name, percentage) {
-      document.querySelector(".questions").style.display = "none";
-      document.querySelector(".certificate").style.display = "block";
-      document.querySelector("#certificateName span").textContent = name;
-      document.getElementById("certificatePercentage").textContent = percentage.toFixed(2) + "%";
-    }
+        // Send result via email without page reload
+        fetch("https://formsubmit.co/ajax/idaraalkhair133@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            name: username,
+            score: finalScore,
+            _subject: "New MCQ Test Result!",
+            _captcha: "false"
+          })
+        })
+          .then(res => res.json())
+          .then(data => console.log("Email sent:", data))
+          .catch(err => console.error("Email error:", err));
 
-    function showDetails() {
-      document.querySelector(".certificate").style.display = "none";
-      const detailsContainer = document.getElementById("detailsContainer");
-      detailsContainer.innerHTML = questionsData.map((q, i) => `
+        // Display certificate
+        displayCertificate(username, percentage);
+      }
+
+
+      function showDetails() {
+        document.querySelector(".certificate").style.display = "none";
+        const detailsContainer = document.getElementById("detailsContainer");
+        detailsContainer.innerHTML = questionsData.map((q, i) => `
         <div>
           <strong>${q.question}</strong>
           <p class="${userAnswers[i] === q.correct ? 'correct' : 'wrong'}">Your answer: ${userAnswers[i]}</p>
           <p>Correct answer: ${q.correct}</p>
         </div>
       `).join('');
-      detailsContainer.style.display = "block";
-    }
+        detailsContainer.style.display = "block";
+      }
 
-    function showTab(tab) {
-      document.getElementById('userTab').style.display = tab === 'user' ? 'block' : 'none';
-      document.getElementById('adminTab').style.display = tab === 'admin' ? 'block' : 'none';
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelector(`.tab-btn[onclick="showTab('${tab}')"]`).classList.add('active');
-    }
+      function showTab(tab) {
+        document.getElementById('userTab').style.display = tab === 'user' ? 'block' : 'none';
+        document.getElementById('adminTab').style.display = tab === 'admin' ? 'block' : 'none';
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab-btn[onclick="showTab('${tab}')"]`).classList.add('active');
+      }
 
-    function authenticateAdmin() {
-  const password = document.getElementById('adminPassword').value.trim();
-  if (password === adminPassword) {
-    // Hide the login container inside adminTab
-    document.querySelector('#adminTab .container').style.display = 'none';
+      function authenticateAdmin() {
+        const password = document.getElementById('adminPassword').value.trim();
+        if (password === adminPassword) {
+          // Hide the login container inside adminTab
+          document.querySelector('#adminTab .container').style.display = 'none';
 
-    // Show the admin results container
-    document.getElementById('adminContainer').style.display = 'block';
+          // Show the admin results container
+          document.getElementById('adminContainer').style.display = 'block';
 
-    // Populate the results
-    const adminResults = document.getElementById('adminResults');
-    adminResults.innerHTML = studentResults.map(result => `
+          // Populate the results
+          const adminResults = document.getElementById('adminResults');
+          adminResults.innerHTML = studentResults.map(result => `
       <tr>
         <td>${result.name}</td>
         <td>${result.score}</td>
@@ -516,18 +603,29 @@
         <td><button class="btn" onclick="deleteResult('${result.name}')">Delete</button></td>
       </tr>
     `).join('');
-  } else {
-    alert('Incorrect password');
-  }
-}
+        } else {
+          alert('Incorrect password');
+        }
+      }
 
 
-    function deleteResult(name) {
-      studentResults = studentResults.filter(result => result.name !== name);
-      localStorage.setItem('studentResults', JSON.stringify(studentResults));
-      authenticateAdmin();
-    }
-  </script>
+      function deleteResult(name) {
+        studentResults = studentResults.filter(result => result.name !== name);
+        localStorage.setItem('studentResults', JSON.stringify(studentResults));
+        authenticateAdmin();
+      }
+
+      function submitResult() {
+        let userName = document.getElementById("nameInput").value;
+        let userScore = 9; // Replace with actual score logic
+
+        document.getElementById("formName").value = userName;
+        document.getElementById("formScore").value = userScore;
+
+        document.getElementById("resultForm").submit(); // sends email to you!
+      }
+
+    </script>
 </body>
 
 </html>
