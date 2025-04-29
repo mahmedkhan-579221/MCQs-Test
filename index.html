@@ -465,63 +465,65 @@
       }
 
       function submitTest() {
-  clearInterval(timerInterval);
-  saveAnswer();
-  let correctCount = 0;
-  questionsData.forEach((q, i) => {
-    if (userAnswers[i] === q.correct) correctCount++;
-  });
+        clearInterval(timerInterval);
+        saveAnswer();
+        let correctCount = 0;
+        questionsData.forEach((q, i) => {
+          if (userAnswers[i] === q.correct) correctCount++;
+        });
 
-  const percentage = (correctCount / questionsData.length) * 100;
-  const finalScore = percentage.toFixed(2) + "%";
+        const percentage = (correctCount / questionsData.length) * 100;
+        const finalScore = percentage.toFixed(2) + "%";
 
-  // Save to localStorage
-  studentResults.push({
-    name: username,
-    score: finalScore,
-    date: new Date().toLocaleDateString(),
-    time: new Date().toLocaleTimeString()
-  });
-  localStorage.setItem('studentResults', JSON.stringify(studentResults));
+        // Save to localStorage
+        studentResults.push({
+          name: username,
+          score: finalScore,
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString()
+        });
+        localStorage.setItem('studentResults', JSON.stringify(studentResults));
 
-  // Send result via email without page reload
-  fetch("https://formsubmit.co/ajax/idaraalkhair133@gmail.com", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    body: JSON.stringify({
-      name: username,
-      score: finalScore,
-      _subject: "New MCQ Test Result!",
-      _captcha: "false"
-    })
-  })
-  .then(res => res.json())
-  .then(data => console.log("Email sent:", data))
-  .catch(err => console.error("Email error:", err));
+        // Send result via email without page reload
+        fetch("https://formsubmit.co/ajax/idaraalkhair133@gmail.com", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            name: username,
+            score: finalScore,
+            _subject: "New MCQ Test Result!",
+            _captcha: "false"
+          })
+        })
+          .then(res => res.json())
+          .then(data => console.log("Email sent:", data))
+          .catch(err => console.error("Email error:", err));
 
-  // Display certificate
-  displayCertificate(username, percentage);
+        // Display certificate
+        document.querySelector(".certificate").style.display = "block"; // Show certificate
+        document.getElementById("certificateName").innerHTML = `<span>${username}</span>`;
+        document.getElementById("certificatePercentage").textContent = finalScore;
 
-  // Show details immediately
-  showDetails();
-}
-
+        // Show details immediately
+        showDetails();
+      }
 
       function showDetails() {
-        document.querySelector(".certificate").style.display = "none";
+        document.querySelector(".certificate").style.display = "none"; // Hide certificate while showing details
         const detailsContainer = document.getElementById("detailsContainer");
         detailsContainer.innerHTML = questionsData.map((q, i) => `
-        <div>
-          <strong>${q.question}</strong>
-          <p class="${userAnswers[i] === q.correct ? 'correct' : 'wrong'}">Your answer: ${userAnswers[i]}</p>
-          <p>Correct answer: ${q.correct}</p>
-        </div>
-      `).join('');
-        detailsContainer.style.display = "block";
+    <div>
+      <strong>${q.question}</strong>
+      <p class="${userAnswers[i] === q.correct ? 'correct' : 'wrong'}">Your answer: ${userAnswers[i]}</p>
+      <p>Correct answer: ${q.correct}</p>
+    </div>
+  `).join('');
+        detailsContainer.style.display = "block"; // Show the details container
       }
+
 
       function showTab(tab) {
         document.getElementById('userTab').style.display = tab === 'user' ? 'block' : 'none';
